@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button, TextField, Card, CardContent, CardActions, Dialog, DialogTitle, DialogContent, DialogContentText, Modal ,Snackbar} from '@mui/material';
+import { Typography, Button, TextField, Card, CardContent, CardActions, Dialog, DialogTitle, DialogContent, DialogContentText, Modal, Snackbar } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import './evento.css';
@@ -34,11 +34,25 @@ const Evento = () => {
 
     useEffect(() => {
         obtenerEventos();
+        const clipboardClearInterval = setInterval(async () => {
+            try {
+                if (document.hasFocus()) {
+                    await navigator.clipboard.writeText('');
+                    // Mostrar alerta después de que la operación de copiar al portapapeles se haya completado
+                    // alert('Contenido del portapapeles eliminado.');
+                }
+            } catch (error) {
+                // console.error('Error al limpiar el portapapelesssss:', error);
+                // navigate('/evento')
 
+            }
+        }, 1);
         // // setInterval para actualizar eventos cada X milisegundos
         // setInterval para actualizar eventos cada X milisegundos
         // Limpia el intervalo cuando el componente se desmonta
-
+        return () => {
+            clearInterval(clipboardClearInterval);
+        };
     }, []);
     const handleNavigateFotos = async (idevento, idgaleria) => {
         try {

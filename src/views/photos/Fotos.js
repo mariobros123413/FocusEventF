@@ -9,6 +9,7 @@ import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import { useParams } from 'react-router-dom';
 import api from 'src/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 
 const Fotos = () => {
@@ -18,14 +19,68 @@ const Fotos = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     obtenerFotos();
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Configurar un intervalo que limpie el portapapeles cada 2 segundos
+    const clipboardClearInterval = setInterval(async () => {
+      try {
+        if (document.hasFocus()) {
+          await navigator.clipboard.writeText('');
+          // Mostrar alerta después de que la operación de copiar al portapapeles se haya completado
+          // alert('Contenido del portapapeles eliminado.');
+        } else {
+          console.log('documento no focussed')
+        }
+      } catch (error) {
+        // console.error('Error al limpiar el portapapelesssss:', error);
+        // navigate('/evento')
+
+      }
+    }, 1);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+    // Limpiar el event listener y detener el intervalo al desmontar el componente
+    return () => {
+      // window.removeEventListener('keydown', handleKeyDown);
+      clearInterval(clipboardClearInterval);
+      // document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
+  function handleWindowBlur() {
+    // Redirigir a "/evento" si el usuario no está enfocado en tu aplicación
+    navigate('/evento');
+  }
+
+  function handleVisibilityChange() {
+    // Verificar si la página está oculta (no enfocada)
+    if (document.hidden) {
+      // Redirigir a "/evento" si el usuario no está operando en tu aplicación
+      navigate('/evento');
+    }
+  }
+
+  const handleKeyDown = (event) => {
+    // console.log(`event : ${event.key}`)
+    // Evitar captura de pantalla con combinación de teclas (por ejemplo, Ctrl + Shift + I)
+    if (event.metaKey || event.shiftKey || event.key === 'PrintScreen' || event.keyCode === 123) {
+      event.preventDefault();
+      setSnackbarMessage('Captura de pantalla deshabilitada');
+      setSnackbarOpen(true);
+      navigate('/evento');
+    }
+  };
+
   const obtenerFotos = async () => {
     try {
       const response = await api.get(`/galeria/${idgaleria}`);
-      console.log(response.data)
+      // console.log(response.data)
       setFotos(response.data);
     } catch (error) {
       console.error('Error al obtener eventos:', error);
@@ -83,6 +138,8 @@ const Fotos = () => {
 
 
   return (
+
+
     <PageContainer title="Fotos" description="Tus fotos">
 
       <DashboardCard title="Fotos de tu evento">

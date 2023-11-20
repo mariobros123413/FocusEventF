@@ -20,7 +20,9 @@ const Evento = Loadable(lazy(() => import('../views/events/Evento')));
 const Fotos = Loadable(lazy(() => import('../views/photos/Fotos')));
 const Asistencia = Loadable(lazy(() => import('../views/assist/Asistencia')));
 const SubirFotos = Loadable(lazy(() => import('../views/photos/SubirFotos')));
-
+const Cart = Loadable(lazy(() => import('../views/cart/Carrito')));
+const Compras = Loadable(lazy(() => import('../views/cart/Compras')));
+const Pedido = Loadable(lazy(() => import('../views/order/Pedido')));
 const Router = [
   {
     path: '/',
@@ -36,6 +38,9 @@ const Router = [
       { path: '/asistencia', exact: true, element: <Asistencia /> },////////
       { path: '/asistencia/:nombre/:idgaleria', exact: true, element: <SubirFotos /> },
       { path: '/evento/:idevento/:idgaleria/fotos', exact: true, element: <Fotos /> },
+      { path: '/carrito', exact: true, element: <Cart /> },
+      { path: '/compras', exact: true, element: <Compras /> },
+      { path: '/pedidos', exact: true, element: <Pedido /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

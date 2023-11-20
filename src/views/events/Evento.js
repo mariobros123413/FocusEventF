@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button, TextField, Card, CardContent, CardActions, Dialog, DialogTitle, DialogContent, DialogContentText, Modal, Snackbar } from '@mui/material';
+import { Typography, Button, TextField, Card, CardContent, CardActions, Dialog, FormControlLabel, Checkbox, DialogTitle, DialogContent, DialogContentText, Modal, Snackbar } from '@mui/material';
 import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import './evento.css';
@@ -10,12 +10,20 @@ const Evento = () => {
     const [open, setOpen] = useState(false);
     const [openElim, setOpenElim] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
+    const [openInv, setOpenInv] = useState(false);
+    const [openVer, setOpenVer] = useState(false);
+
+    const [correos, setCorreos] = useState([
+        { correo: '', esFotografo: false },
+    ]);
+    const [invitaciones, setInvitaciones] = useState(['']); // Inicializamos con un campo vacío
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [direccion, setDireccion] = useState('');
     const [selectedDate, setSelectedDate] = useState(''); // Estado para la fecha seleccionada
     const [selectedTime, setSelectedTime] = useState(''); // Estado para la hora seleccionada
     const [eventoAEliminar, setEventoAEliminar] = useState(null);
+    const [eventoInvitar, setEventoInvitar] = useState(null);
     ////////////////////////////////<EDITED>
     const [nombreEdited, setNombreEdited] = useState('');
     const [descripcionEdited, setDescripcionEdited] = useState('');
@@ -73,6 +81,94 @@ const Evento = () => {
         // Aquí puedes almacenar el id del evento que se eliminará, ya sea en el estado o en una variable de referencia
         // Puedes usar la función setEventoAEliminar o useRef según tus necesidades
         setEventoAEliminar(idevento);
+    };
+    const handleOpenInv = (idevento) => {
+        setOpenInv(true);
+        setEventoInvitar(idevento);
+    };
+    const handleOpenVer = async (idevento) => {
+        try {
+            const response = await api.get(`evento/obtenerInvitados/${idevento}`);
+            console.log(`response get inv : ${JSON.stringify(response.data)}`)
+            setInvitaciones(response.data);
+            setOpenVer(true);
+        } catch (error) {
+            console.log(`error handleOpen Ver : ${error}`)
+        }
+
+    };
+    const [errores, setErrores] = useState(Array(correos.length).fill(false));
+
+
+    const handleCorreoChange = (index, campo, valor) => {
+        const nuevosCorreos = [...correos];
+        nuevosCorreos[index] = { ...nuevosCorreos[index], [campo]: valor };
+
+        // Validar el formato de correo
+        const formatoCorreoValido = /^\S+@\S+\.\S+$/.test(valor);
+
+        // Actualizar el estado de errores
+        const nuevosErrores = [...errores];
+        nuevosErrores[index] = !formatoCorreoValido;
+
+        // Verificar si hay errores en el formato del correo
+        // Actualizar el estado del botón
+
+        setCorreos(nuevosCorreos);
+        setErrores(nuevosErrores);
+    };
+
+
+
+    const handleAgregarCampo = () => {
+        setCorreos([...correos, { correo: '', esFotografo: false }]);
+    };
+    const handleEnviarInvitaciones = async () => {
+        const correosActivados = [];
+        const correosDesactivados = [];
+
+        correos.forEach((invitado) => {
+            if (invitado.esFotografo) {
+                correosActivados.push(invitado.correo);
+            } else {
+                correosDesactivados.push(invitado.correo);
+            }
+        });
+        try {
+            await api.post(`/evento/invitarFotografos/${eventoInvitar}`, correosActivados);
+            await api.post(`/evento/invitarEvento/${eventoInvitar}`, correosDesactivados);
+            console.log('Correos con checkbox activado:', correosActivados);
+            console.log('Correos con checkbox desactivado:', correosDesactivados);
+            // console.log('Invitaciones enviadas:', response.data);
+            // Puedes manejar la respuesta según tus necesidades
+            handleCloseInv(true);
+        } catch (error) {
+            setSnackbarMessage(`${error.response.data.message}`)
+            setSnackbarOpen(true);
+            console.error('Error al enviar invitaciones:', error);
+            // Puedes manejar el error según tus necesidades
+        }
+    };
+    const handleEliminarInvitacion = async (idevento, idusuario, correo) => {
+        // Aquí puedes hacer algo con el array de correos (por ejemplo, enviar a tu servidor)
+        try {
+            await api.delete(`/evento/eliminarInvitado/${idevento}/${idusuario}`);
+            setSnackbarMessage(`El invitado con correo ${correo} fue eliminado correctamente`)
+            setSnackbarOpen(true);
+            handleCloseVerInv(true);
+        } catch (error) {
+            setSnackbarMessage(`Ocurrió un error al eliminar al usuario ${correo}`)
+            setSnackbarOpen(true);
+        }
+
+    };
+
+    const handleCloseInv = () => {
+        setOpenInv(false);
+        setCorreos(['']);
+    };
+    const handleCloseVerInv = () => {
+        setOpenVer(false);
     };
     const handleCloseEdit = () => setOpenEdit(false);
     const handleOpenEdit = (evento) => {
@@ -182,7 +278,7 @@ const Evento = () => {
             const response = await api.get(`/evento/obtenerEventos/${userData.id}`);
             setEventos(response.data);
         } catch (error) {
-            console.error('Error al obtener eventos:', error);
+            console.error('No hay eventos:', error);
         }
     };
     const combineDateAndTime = (date, time) => {
@@ -230,6 +326,12 @@ const Evento = () => {
                             </Button>
                             <Button size="small" onClick={() => handleNavigateFotos(evento.id, evento.idgaleria)}>
                                 Ver fotos
+                            </Button>
+                            <Button size="small" onClick={() => handleOpenInv(evento.id)}>
+                                Enviar invitaciones
+                            </Button>
+                            <Button size="small" onClick={() => handleOpenVer(evento.id)}>
+                                Ver Invitaciones
                             </Button>
                         </CardActions>
                     </Card>
@@ -298,7 +400,7 @@ const Evento = () => {
             )}
             {openElim && (
                 <Dialog open={openElim} onClose={handleCloseElim} aria-labelledby="draggable-dialog-title">
-                    <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+                    <DialogTitle id="draggable-dialog-title">
                         Confirmar Eliminación
                     </DialogTitle>
                     <DialogContent>
@@ -383,6 +485,87 @@ const Evento = () => {
                         </div>
                     </div>
                 </Modal>
+            )}
+            {openInv && (
+                <div className="modal-background">
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ width: '500px' }}>
+                        <Typography variant="h5" gutterBottom>
+                            Lista de invitados
+                        </Typography>
+                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            {correos.map((invitado, index) => (
+                                <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                    <TextField
+                                        label={`Correo electrónico ${index + 1}`}
+                                        fullWidth
+                                        variant="outlined"
+                                        margin="normal"
+                                        value={invitado.correo}
+                                        onChange={(e) => handleCorreoChange(index, 'correo', e.target.value)}
+                                    />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={invitado.esFotografo}
+                                                onChange={(e) => handleCorreoChange(index, 'esFotografo', e.target.checked)}
+                                            />
+                                        }
+                                        label="¿Es fotógrafo?"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleEnviarInvitaciones}
+                            style={{ marginTop: 16 }}
+                        >
+                            Enviar invitaciones
+                        </Button>
+
+                        <Button variant="contained" color="warning" style={{ marginTop: 16, marginLeft: 20 }} onClick={() => window.location.reload()}>
+                            Cancelar
+                        </Button>
+                        <Button variant="contained" color="success" onClick={handleAgregarCampo} style={{ marginTop: 16, marginLeft: 20 }}>
+                            +
+                        </Button>
+                    </div>
+                </div>
+            )}
+            {openVer && (
+                <div className={`modal-background ${openVer ? 'open' : ''}`} onClick={handleCloseVerInv}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+                        <Typography variant="h5" gutterBottom>
+                            Lista de invitados
+                        </Typography>
+                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            {invitaciones.map((invitado, index) => (
+                                <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                                    <TextField
+                                        label={`Correo electrónico ${index + 1}`}
+                                        fullWidth
+                                        variant="outlined"
+                                        margin="normal"
+                                        value={invitado.correo}
+                                        onChange={(e) => handleCorreoChange(index, 'correo', e.target.value)}
+                                        disabled
+                                    />
+                                    <FormControlLabel
+                                        control={<Checkbox checked={invitado.iscamarografo} disabled />}
+                                        label="¿Es fotógrafo?"
+                                    />
+                                    <Button variant="contained" color="error" onClick={() => handleEliminarInvitacion(invitado.idevento, invitado.idusuario, invitado.correo)}>
+                                        X
+                                    </Button>
+                                </div>
+                            ))}
+                        </div>
+                        <Button variant="contained" color="warning" style={{ marginTop: 16 }} onClick={handleCloseVerInv}>
+                            Cerrar
+                        </Button>
+                    </div>
+                </div>
             )}
             <Snackbar
                 open={snackbarOpen}

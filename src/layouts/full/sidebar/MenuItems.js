@@ -1,5 +1,5 @@
 import {
-  IconAperture, IconCopy, IconLayoutDashboard, IconLogin, IconMoodHappy, IconTypography, IconUserPlus, IconLogout, IconCalendarEvent
+  IconAperture, IconCopy, IconLayoutDashboard, IconMenuOrder,IconLogin, IconGift, IconMoodHappy, IconTypography, IconUserPlus, IconLogout, IconCalendarEvent, IconShoppingCart
 } from '@tabler/icons';
 
 import { uniqueId } from 'lodash';
@@ -33,6 +33,24 @@ const Menuitems = [
     title: 'Tus Asistencias',
     icon: IconMoodHappy,
     href: '/asistencia',
+  },
+  {
+    id: uniqueId(),
+    title: 'Tu Carrito',
+    icon: IconShoppingCart,
+    href: '/carrito',
+  },
+  {
+    id: uniqueId(),
+    title: 'Tus compras',
+    icon: IconGift,
+    href: '/compras',
+  },
+  {
+    id: uniqueId(),
+    title: 'Tus Ventas',
+    icon: IconMenuOrder,
+    href: '/pedidos',
   },
   {
     id: uniqueId(),

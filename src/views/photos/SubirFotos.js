@@ -212,7 +212,7 @@ const SubirFotos = () => {
                     <CardMedia
                         id="file-input"
                         component="img"
-                        height="85%"
+                        height="50%"
                         style={{ objectFit: 'contain' }}
                         image={selectedFile ? URL.createObjectURL(selectedFile) : ''}
                         alt="Vista previa"

@@ -43,7 +43,7 @@ const Router = [
       { path: '/compras', exact: true, element: <Compras /> },
       { path: '/pedidos', exact: true, element: <Pedido /> },
       { path: '/suscripcion', element: <Suscripcion /> },
-      { path: '/*', element: <Navigate to="/suscripcion" /> },
+      { path: '*', element: <Navigate to="/suscripcion" /> },
     ],
   },
   {
@@ -53,7 +53,7 @@ const Router = [
       { path: '404', element: <Error /> },
       { path: '/auth/register', element: <Register /> },
       { path: '/auth/login', element: <Login /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      { path: '*', element: <Navigate to="/suscripcion" /> },
     ],
   },
   {
@@ -61,7 +61,7 @@ const Router = [
     element: <BlankLayout />,
     children: [
       { path: '/home', element: <Home /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      { path: '*', element: <Navigate to="/suscripcion" /> },
     ],
   }
 ];

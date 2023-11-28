@@ -4,11 +4,10 @@ import PageContainer from 'src/components/container/PageContainer';
 import DashboardCard from '../../components/shared/DashboardCard';
 import api from 'src/axiosInstance';
 import { useNavigate } from 'react-router-dom';
-import html2canvas from 'html2canvas';
 
 const Compras = () => {
     const [pedidos, setPedidos] = useState([]);
-    const [clicked, setClicked] = useState(false);
+    const [clicked,] = useState(false);
     const localData = window.localStorage.getItem('loggedFocusEvent');
     const localDataParsed = JSON.parse(localData);
     const userData = JSON.parse(localDataParsed.userData);
@@ -46,13 +45,7 @@ const Compras = () => {
         //     // document.removeEventListener('visibilitychange', handleVisibilityChange);
         // };
     }, [clicked]); // El segundo argumento [] garantiza que useEffect se ejecute solo una vez al montar el componente
-    function handleVisibilityChange(event) {
-        // Verificar si la página está oculta (no enfocada)
-        if (document.hidden && clicked === false) {
-            // Redirigir a "/evento" si el usuario no está operando en tu aplicación
-            navigate('/dashboard');
-        }
-    }
+
 
     const handleKeyDown = (event) => {
         // console.log(`event : ${event.key}`)

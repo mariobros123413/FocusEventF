@@ -6,13 +6,11 @@ import DashboardCard from '../../../components/shared/DashboardCard';
 import api from 'src/axiosInstance';
 const MonthlyEarnings = () => {
   const [totalEarnings, setTotalEarnings] = useState(0);
-  const [precios, setPrecios] = useState([]);
+  const [, setPrecios] = useState([]);
   const [monthlyEarningsData, setmonthlyEarningsData] = useState([]);
   const localData = window.localStorage.getItem('loggedFocusEvent');
   const localDataParsed = localData ? JSON.parse(localData) : null;
   const userData = localDataParsed ? JSON.parse(localDataParsed.userData) : null;
-  const isLoggedIn = userData !== null;
-  const isUserType1 = isLoggedIn && userData.idtipousuario === 1;
   useEffect(() => {
     const fetchTotalEarnings = async () => {
       try {

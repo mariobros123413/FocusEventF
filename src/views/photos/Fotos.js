@@ -33,7 +33,7 @@ const Fotos = () => {
     window.addEventListener('keydown', handleKeyDown);
 
     // Configurar un intervalo que limpie el portapapeles cada 2 segundos
-    const clipboardClearInterval = setInterval(async () => {
+    setInterval(async () => {
       try {
         if (document.hasFocus()) {
           await navigator.clipboard.writeText('');
@@ -56,7 +56,7 @@ const Fotos = () => {
     // // Limpiar el event listener y detener el intervalo al desmontar el componente
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      clearInterval(clipboardClearInterval);
+      // clearInterval(clipboardClearInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
@@ -213,7 +213,6 @@ const Fotos = () => {
         "precio": precio,
         "url": url
       });
-      console.log(JSON.stringify(response));
       // eslint-disable-next-line no-template-curly-in-string
       if (response.data === "Ya existe un carrito con el par asociado : idfoto= ${idfoto}, idusuario= ${idusuario}") {
         setSnackbarMessage('Esta foto ya está en el carrito');
@@ -246,7 +245,6 @@ const Fotos = () => {
       ])
         .then((res) => {
           response = res;
-          console.log(`responsee : ${JSON.stringify(response)}`)
         })
         .catch((error) => {
           console.log(`Timeout error: ${error}`);
@@ -327,7 +325,7 @@ const Fotos = () => {
 
                 <CardMedia
                   component="img"
-                  height="50%"
+                  height="80%"
                   style={{ objectFit: 'contain' }}
                   image={foto.urlwm}
                   alt="Paella dish"

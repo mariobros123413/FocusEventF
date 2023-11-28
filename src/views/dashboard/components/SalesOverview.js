@@ -3,8 +3,6 @@ import { Select, MenuItem } from '@mui/material';
 import Chart from 'react-apexcharts';
 import DashboardCard from '../../../components/shared/DashboardCard';
 import api from 'src/axiosInstance';
-import { useTheme } from '@mui/material/styles';
-
 const SalesOverview = () => {
     const [month, setMonth] = useState('11');
     const [meses, setMeses] = useState([]);
@@ -12,9 +10,6 @@ const SalesOverview = () => {
     const localData = window.localStorage.getItem('loggedFocusEvent');
     const localDataParsed = localData ? JSON.parse(localData) : null;
     const userData = localDataParsed ? JSON.parse(localDataParsed.userData) : null;
-    const isLoggedIn = userData !== null;
-    const isUserType1 = isLoggedIn && userData.idtipousuario === 1;
-
 
     const handleChange = (event) => {
         setMonth(event.target.value);
@@ -75,11 +70,6 @@ const SalesOverview = () => {
 
         fetchSalesData();
     }, [month, userData.id]); // Dependencias 'month' y 'tuIdDeVendedorAqui' para volver a cargar los datos cuando cambian
-
-    // Resto del código de configuración de gráficos y presentación usando 'salesData'
-    const theme = useTheme();
-    const primary = theme.palette.primary.main;
-    const secondary = theme.palette.secondary.main;
 
 
     const optionscolumnchart = {

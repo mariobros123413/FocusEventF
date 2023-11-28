@@ -305,37 +305,45 @@ const Evento = () => {
                     Crear Evento +
                 </Button>
                 {/* Bucle para mostrar tarjetas de eventos */}
-                {eventos.map((evento) => (
-                    <Card key={evento.id} style={{ marginTop: '16px' }} >
-                        <CardContent>
-                            <Typography variant="h5" component="div">
-                                {evento.nombre}
-                            </Typography>
-                            <Typography color="textSecondary">
-                                {evento.descripcion}
-                            </Typography>
-                            <Typography color="textSecondary">
-                                {evento.fecha}
-                            </Typography>
-                            {/* Puedes agregar más detalles del evento aquí */}
-                        </CardContent>
-                        <CardActions>
-                            <Button size="small" onClick={() => handleOpenElim(evento.id)}>Eliminar</Button>
-                            <Button size="small" onClick={() => handleOpenEdit(evento)}>
-                                Actualizar datos
-                            </Button>
-                            <Button size="small" onClick={() => handleNavigateFotos(evento.id, evento.idgaleria)}>
-                                Ver fotos
-                            </Button>
-                            <Button size="small" onClick={() => handleOpenInv(evento.id)}>
-                                Enviar invitaciones
-                            </Button>
-                            <Button size="small" onClick={() => handleOpenVer(evento.id)}>
-                                Ver Invitaciones
-                            </Button>
-                        </CardActions>
-                    </Card>
-                ))}
+                {Array.isArray(eventos) ? (
+                    eventos.map((evento) => (
+                        <Card key={evento.id} style={{ marginTop: '16px' }} >
+                            <CardContent>
+                                <Typography variant="h5" component="div">
+                                    {evento.nombre}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    {evento.descripcion}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    {evento.fecha}
+                                </Typography>
+                                <Typography color="textSecondary">
+                                    {evento.codigo}
+                                </Typography>
+                                {/* Puedes agregar más detalles del evento aquí */}
+                            </CardContent>
+                            <CardActions>
+                                <Button size="small" onClick={() => handleOpenElim(evento.id)}>Eliminar</Button>
+                                <Button size="small" onClick={() => handleOpenEdit(evento)}>
+                                    Actualizar datos
+                                </Button>
+                                <Button size="small" onClick={() => handleNavigateFotos(evento.id, evento.idgaleria)}>
+                                    Ver fotos
+                                </Button>
+                                <Button size="small" onClick={() => handleOpenInv(evento.id)}>
+                                    Enviar invitaciones
+                                </Button>
+                                <Button size="small" onClick={() => handleOpenVer(evento.id)}>
+                                    Ver Invitaciones
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    ))) : (
+                    <Typography color="textSecondary">
+                        No creaste eventos
+                    </Typography> //en hackathono hice el else, revisar
+                )}
             </DashboardCard>
 
             {open && (

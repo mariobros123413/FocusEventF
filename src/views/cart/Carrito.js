@@ -113,7 +113,6 @@ const Cart = () => {
             const arrayDeFotos = cartItems.map((item) => ({
                 idfoto: item.idfoto,
                 idfotografo: item.idfotografo,
-                url: item.url,
                 precio: item.precio,
                 // Agrega otras propiedades según la estructura de tu objeto de foto
             }));
@@ -164,7 +163,7 @@ const Cart = () => {
     return (
         <PageContainer title="Carrito de Compras" description="Lista de Fotos en el Carrito">
             <DashboardCard title="Fotos en el Carrito">
-                {Array.isArray(cartItems) ? (
+                {Array.isArray(cartItems) && cartItems.length > 0 ? ( //tambien corregi en la hackathon, {Array.isArray(cartItems) ?(
                     <Card sx={{ marginTop: 2 }}>
                         <Typography variant="h6" color="text.primary">
                             Total a Pagar: {calcularTotal()} USD

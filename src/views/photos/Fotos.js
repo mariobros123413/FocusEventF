@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Divider, CardMedia, Tooltip, CardContent, CardActions, IconButton, Button, Box, Rating, TextField, Snackbar, Typography, CardHeader, Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { Card, Divider, CardMedia, Tooltip, CardContent, CardActions, IconButton, Button, Box, Rating, TextField, Snackbar, Typography, CardHeader, Dialog, DialogContent, DialogTitle } from '@mui/material';
 import {
   IconShoppingCart
 } from '@tabler/icons';
@@ -30,40 +30,40 @@ const Fotos = () => {
   const userData = JSON.parse(localDataParsed.userData);
   useEffect(() => {
     obtenerFotos();
-    // window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
 
-    // // Configurar un intervalo que limpie el portapapeles cada 2 segundos
-    // const clipboardClearInterval = setInterval(async () => {
-    //   try {
-    //     if (document.hasFocus()) {
-    //       await navigator.clipboard.writeText('');
-    //       // Mostrar alerta después de que la operación de copiar al portapapeles se haya completado
-    //       // alert('Contenido del portapapeles eliminado.');
-    //     } else {
-    //       console.log('documento no focussed')
-    //     }
-    //   } catch (error) {
-    //     // console.error('Error al limpiar el portapapelesssss:', error);
-    //     // navigate('/evento')
+    // Configurar un intervalo que limpie el portapapeles cada 2 segundos
+    const clipboardClearInterval = setInterval(async () => {
+      try {
+        if (document.hasFocus()) {
+          await navigator.clipboard.writeText('');
+          // Mostrar alerta después de que la operación de copiar al portapapeles se haya completado
+          // alert('Contenido del portapapeles eliminado.');
+        } else {
+          console.log('documento no focussed')
+        }
+      } catch (error) {
+        // console.error('Error al limpiar el portapapelesssss:', error);
+        // navigate('/evento')
 
-    //   }
-    // }, 1);
-    // document.addEventListener('visibilitychange', handleVisibilityChange);
+      }
+    }, 1);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     // window.addEventListener('blur', handleWindowBlur);
-    // document.addEventListener('contextmenu', function (e) {
-    //   e.preventDefault();
-    // });
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
     // // Limpiar el event listener y detener el intervalo al desmontar el componente
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      // clearInterval(clipboardClearInterval);
+      clearInterval(clipboardClearInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
-  function handleWindowBlur() {
-    // Redirigir a "/evento" si el usuario no está enfocado en tu aplicación
-    navigate('/evento');
-  }
+  // function handleWindowBlur() {
+  //   // Redirigir a "/evento" si el usuario no está enfocado en tu aplicación
+  //   navigate('/evento');
+  // }
 
   function handleVisibilityChange() {
     // Verificar si la página está oculta (no enfocada)
@@ -103,7 +103,7 @@ const Fotos = () => {
       await api.post(`/usuario/resenas/${fotografo}`, {
         "comentario": comentario,
         "valoracion": valoracion,
-        "idusuario" : userData.id
+        "idusuario": userData.id
       })
       setSnackbarMessage('Valoración enviada');
       setSnackbarOpen(true);
@@ -119,12 +119,84 @@ const Fotos = () => {
   const obtenerFotos = async () => {
     try {
       const response = await api.get(`/galeria/${idgaleria}`);
-      // console.log(response.data)
-      setFotos(response.data);
+      console.log(response.data)
+      const fotosConMarcaAgua = await Promise.all(
+        response.data.map(async (foto) => {
+          try {
+            const response = await api.get(`/carrito/image?imageUrl=${foto.url}`, { responseType: 'arraybuffer' });
+            const blob = new Blob([response.data], { type: 'image/jpeg' });
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob);
+            // Obtener la imagen con marca de agua usando la función agregarMarcaDeAgua
+            const imageUrlWithWatermark = await agregarMarcaDeAgua(downloadLink, 'FOCUS EVENT');
+
+            // Retornar el objeto de la foto con la nueva URL
+            return { ...foto, url: imageUrlWithWatermark };
+          } catch (error) {
+            console.error('Error al agregar marca de agua:', error);
+            // En caso de error, simplemente retornar la foto sin modificar
+            return foto;
+          }
+        })
+      );
+      setFotos(fotosConMarcaAgua);
     } catch (error) {
       console.error('Error al obtener eventos:', error);
     }
   };
+  const agregarMarcaDeAgua = async (imageUrl, watermarkText) => {
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.crossOrigin = 'anonymous';
+
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+
+        // Establecer el tamaño del canvas según el tamaño de la imagen
+        canvas.width = image.width;
+        canvas.height = image.height;
+
+        // Dibujar la imagen en el canvas
+        context.drawImage(image, 0, 0);
+
+        // Inicializar el tamaño de la fuente
+        let fontSize = 30; // Tamaño de fuente inicial
+        let textFits = false;
+
+        while (!textFits && fontSize > 0) {
+          // Establecer el estilo de la marca de agua con el tamaño de fuente actual
+          context.font = `${fontSize}px Arial`;
+          context.fillStyle = 'rgba(93,135,255)'; // Color blanco con opacidad
+          context.textAlign = 'center';
+          context.textBaseline = 'middle';
+
+          // Calcular la posición para centrar el texto verticalmente
+          const x = canvas.width / 2;
+          const y = canvas.height / 2;
+
+          // Dibujar el texto como marca de agua
+          context.fillText(watermarkText, x, y);
+
+          // Verificar si el texto cabe completamente en la imagen
+          textFits = y + fontSize / 2 < canvas.height;
+
+          // Reducir el tamaño de la fuente si es necesario
+          if (!textFits) {
+            fontSize--;
+          }
+        }
+
+        // Obtener la URL de la imagen con marca de agua
+        const fotoConMarcaAgua = canvas.toDataURL('image/jpeg');
+        resolve(fotoConMarcaAgua);
+      };
+
+      // Cargar la imagen
+      image.src = imageUrl;
+    });
+  };
+
   const handleFileChange = (event) => {
     const file = (event && event.target && event.target.files) ? event.target.files[0] : null;
     if (file) {
@@ -141,6 +213,7 @@ const Fotos = () => {
         "precio": precio,
         "url": url
       });
+      console.log(JSON.stringify(response));
       // eslint-disable-next-line no-template-curly-in-string
       if (response.data === "Ya existe un carrito con el par asociado : idfoto= ${idfoto}, idusuario= ${idusuario}") {
         setSnackbarMessage('Esta foto ya está en el carrito');
@@ -173,6 +246,7 @@ const Fotos = () => {
       ])
         .then((res) => {
           response = res;
+          console.log(`responsee : ${JSON.stringify(response)}`)
         })
         .catch((error) => {
           console.log(`Timeout error: ${error}`);
@@ -204,7 +278,7 @@ const Fotos = () => {
     <PageContainer title="Fotos" description="Tus fotos">
 
       <DashboardCard title="Fotos de tu evento">
-        {Array.isArray(fotos) ? (
+        {Array.isArray(fotos) && fotos.length > 0 ? (
 
           <Button
             component="label"
@@ -253,9 +327,9 @@ const Fotos = () => {
 
                 <CardMedia
                   component="img"
-                  height="80%"
+                  height="50%"
                   style={{ objectFit: 'contain' }}
-                  image={foto.url}
+                  image={foto.urlwm}
                   alt="Paella dish"
                 />
                 <CardActions disableSpacing>

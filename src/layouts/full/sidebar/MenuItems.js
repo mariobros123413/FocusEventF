@@ -1,10 +1,12 @@
 import {
-  IconAperture, IconCopy, IconLayoutDashboard, IconMenuOrder,IconLogin, IconGift, IconMoodHappy, IconTypography, IconUserPlus, IconLogout, IconCalendarEvent, IconShoppingCart
+  IconAperture, IconCopy, IconLayoutDashboard, IconBrandCashapp, IconLogin, IconGift, IconMoodHappy, IconTypography, IconUserPlus, IconLogout, IconCalendarEvent, IconShoppingCart
 } from '@tabler/icons';
 
 import { uniqueId } from 'lodash';
 const localData = window.localStorage.getItem('loggedFocusEvent');
-const isLoggedIn = localData !== null; // Verifica si el usuario ha iniciado sesión
+const localDataParsed = localData ? JSON.parse(localData) : null;
+const userData = localDataParsed ? JSON.parse(localDataParsed.userData) : null;
+const isLoggedIn = userData !== null;
 
 const Menuitems = [
   {
@@ -22,34 +24,34 @@ const Menuitems = [
     navlabel: true,
     subheader: 'Utilidades',
   },
-  {
+  isLoggedIn && userData.idtipousuario !== 2 && {
     id: uniqueId(),
     title: 'Tus Eventos',
     icon: IconCalendarEvent,
     href: '/evento',
   },
-  {
+  isLoggedIn && {
     id: uniqueId(),
     title: 'Tus Asistencias',
     icon: IconMoodHappy,
     href: '/asistencia',
   },
-  {
+  isLoggedIn && {
     id: uniqueId(),
     title: 'Tu Carrito',
     icon: IconShoppingCart,
     href: '/carrito',
   },
-  {
+  isLoggedIn && {
     id: uniqueId(),
     title: 'Tus compras',
     icon: IconGift,
     href: '/compras',
   },
-  {
+  isLoggedIn && userData.idtipousuario === 1 && {
     id: uniqueId(),
     title: 'Tus Ventas',
-    icon: IconMenuOrder,
+    icon: IconBrandCashapp,
     href: '/pedidos',
   },
   {
@@ -102,5 +104,5 @@ const Menuitems = [
     icon: IconAperture,
     href: '/sample-page',
   },
-];
+].filter(Boolean);
 export default Menuitems;

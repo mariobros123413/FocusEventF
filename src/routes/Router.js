@@ -23,6 +23,7 @@ const SubirFotos = Loadable(lazy(() => import('../views/photos/SubirFotos')));
 const Cart = Loadable(lazy(() => import('../views/cart/Carrito')));
 const Compras = Loadable(lazy(() => import('../views/cart/Compras')));
 const Pedido = Loadable(lazy(() => import('../views/order/Pedido')));
+const Suscripcion = Loadable(lazy(() => import('../views/suscription/Suscripcion')));
 const Router = [
   {
     path: '/',
@@ -41,6 +42,7 @@ const Router = [
       { path: '/carrito', exact: true, element: <Cart /> },
       { path: '/compras', exact: true, element: <Compras /> },
       { path: '/pedidos', exact: true, element: <Pedido /> },
+      { path: '/suscripcion', exact: true, element: <Suscripcion /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

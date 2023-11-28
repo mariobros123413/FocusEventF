@@ -138,6 +138,7 @@ const SubirFotos = () => {
     };
     const obtenerFotos = async () => {
         try {
+            console.log(`galeria : ${idgaleria}`)
             const response = await api.get(`/galeria/${userData.id}/${idgaleria}`);
             console.log(response.data)
             setFotos(response.data);

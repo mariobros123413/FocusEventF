@@ -8,7 +8,7 @@ import html2canvas from 'html2canvas';
 
 const Compras = () => {
     const [pedidos, setPedidos] = useState([]);
-    const [clicked, ] = useState(false);
+    const [clicked, setClicked] = useState(false);
     const localData = window.localStorage.getItem('loggedFocusEvent');
     const localDataParsed = JSON.parse(localData);
     const userData = JSON.parse(localDataParsed.userData);
@@ -67,7 +67,7 @@ const Compras = () => {
             // Obtener pedidos del usuario
             const responsePedidos = await api.get(`/carrito/obtenerPedidos/${userData.id}`); // Reemplaza 1 con el ID de usuario real
             const pedidosData = responsePedidos.data;
-            if (responsePedidos.data.status <= 300) {
+            if (responsePedidos.status <= 300) {
                 const pedidosConFotos = await Promise.all(
                     pedidosData.map(async (pedido) => {
                         const responseFotos = await api.get(`/carrito/obtenerFotosPedido/${pedido.id}`);

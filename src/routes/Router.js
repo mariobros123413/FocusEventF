@@ -42,8 +42,8 @@ const Router = [
       { path: '/carrito', exact: true, element: <Cart /> },
       { path: '/compras', exact: true, element: <Compras /> },
       { path: '/pedidos', exact: true, element: <Pedido /> },
-      { path: '/suscripcion', exact: true, element: <Suscripcion /> },
-      { path: '*', element: <Navigate to="/auth/404" /> },
+      { path: '/suscripcion', element: <Suscripcion /> },
+      { path: '/*', element: <Navigate to="/suscripcion" /> },
     ],
   },
   {

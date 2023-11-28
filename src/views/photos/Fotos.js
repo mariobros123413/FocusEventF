@@ -249,7 +249,7 @@ const Fotos = () => {
         .catch((error) => {
           console.log(`Timeout error: ${error}`);
           throw new Error('La solicitud tardó demasiado en responder.');
-        });
+        });//sa
 
       if (response.data.length === 0) {
         setSnackbarMessage('No se encontraron fotos');

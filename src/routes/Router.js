@@ -50,7 +50,7 @@ const Router = [
     path: '/auth',
     element: <BlankLayout />,
     children: [
-      { path: '404', element: <Error /> },
+      { path: '404', element: <Navigate to="/suscripcion" /> },
       { path: '/auth/register', element: <Register /> },
       { path: '/auth/login', element: <Login /> },
       { path: '*', element: <Navigate to="/suscripcion" /> },

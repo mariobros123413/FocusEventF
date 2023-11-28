@@ -325,7 +325,7 @@ const Fotos = () => {
 
                 <CardMedia
                   component="img"
-                  height="80%"
+                  height="50%"
                   style={{ objectFit: 'contain' }}
                   image={foto.urlwm}
                   alt="Paella dish"
